@@ -92,7 +92,7 @@ AndroidManfiest.xml
 
 It's recommended to initialize the SDK in the global Application class/subclass. 
 
-### Facial Validator
+### Face Capture
 
 #### **Step 1: Import Nubarium library**
 
@@ -223,7 +223,7 @@ As in the application the component is declared as a local variable, it can be s
 facialValidator.start();
 ```
 
-### ID Validator
+### ID Capture
 
 #### **Step 1: Import Nubarium library**
 
