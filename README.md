@@ -1,5 +1,8 @@
-# Biometric-SDK-Android
+# Biometric SDK for Android
 
+Nubarium Biometrics Android SDK guides for developers.
+
+**Version** :  1.0.0
 
 ## SDK compatibility
 
@@ -29,7 +32,7 @@ Groovy
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubariumdev:BiometricSDKComponents-Android:0.9.8' 
+    implementation 'com.github.nubariumdev:BiometricSDKComponents-Android:v1.0.0' 
 }
 ```
 
@@ -38,7 +41,7 @@ Apps targeting lighter installations could use an alternate version that allows 
 ```groovy
 `dependencies {`
     `// Get the latest version from Nubarium Biometrics SDK repository`
-    `implementation 'com.github.nubariumdev:BiometricSDKComponents-Android-Lite:0.9.8'` 
+    `implementation 'com.github.nubariumdev:BiometricSDKComponents-Android-Lite:v1.0.0'` 
 `}`
 ```
 
@@ -71,11 +74,7 @@ AndroidManfiest.xml
 
 ### Compatibility
 
-Some text..
-
 ### Maven repository
-
-Some text..
 
 
 
@@ -91,58 +90,54 @@ Some text..
 
 ## Initializing the Android SDK
 
-It's recommended to initialize the SDK in the [global Application class/subclass](https://developer.android.com/reference/android/app/Application). That is to ensure the SDK can start in any scenario (for example, deep linking).
+It's recommended to initialize the SDK in the global Application class/subclass. 
 
-**Step 1: Import Nubarium library**
+### Facial Validator
+
+#### **Step 1: Import Nubarium library**
+
 In your Application class, import the Nubairum library classes:
 
-JavaKotlin
-
 ```java
-import com.nubarium.components.enums.*;
-import com.nubarium.components.sdk.*;
-import com.nubarium.components.tools.*;
+import com.nubarium.components.sdk.FacialResult;
+import com.nubarium.components.sdk.FacialValidator;
 ```
 
-**Step 2: Initialize the SDK**
+#### **Step 2: Initialize the SDK**
 
 **Local variables**
 
 It requires to declare the component as local variable.
 
 ```java
-private Facial facial;    // For facial component
-private IdValidator idValidator;   // For id validator
+private FacialValidator facialValidator;    // Facial validator component
 ```
 
 In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
 
-**Facial**
-
 ```java
 // Class initialization with the Application Context
-facial = new Facial(this);
+facialValidator = new FacialValidator(this);
 
 // Step 1
 // Either of the 2 methods can be used, but only one.
 // Set the credentials provided by Nubarium.
-facial.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
+facialValidator.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 // Set the Api Key provided by Nubarium.
-facial.setApiKey(<NUB_KEY>);
+facialValidator.setApiKey(<NUB_KEY>);
 
 // Step 2 - OPTIONAL
 // In case the application has been initialized before and want to reuse a valid token
 // Set the valid token and specifies whether autogenerate a new one 
 // if the given token is not valid.
-facial.setToken(<NUB_TOKEN>, true);  
+facialValidator.setToken(<NUB_TOKEN>, true);  
 
 // Step 3
 // Set the basic configuration (Options)
-facial.setLivenessRequired(true);  // Default value es true
-facial.setShowHelp(false);   // Default value is false
-facial.setShowVideo(false);   // Default value is false
-facial.setShowPreview(false);   // Defaul values is false
-
+facialValidator.setLivenessRequired(true);  // Default value is true
+facialValidator.setShowHelp(false);   // Default value is false
+facialValidator.setShowVideo(false);   // Default value is false
+facialValidator.setShowPreview(false);   // Defaul values is false
 
 ```
 
@@ -160,9 +155,7 @@ facial.setShowPreview(false);   // Defaul values is false
 
    * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
 
-     
-
-**Setting up the Activity Result**
+#### Step 3: **Setting up the Activity Result**
 
 ```java
 @Override
@@ -175,10 +168,10 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 It is recommended to use the initialization listener, to detect any fail or save the initialization token.
 
-**Initialization with initialization listener**
+#### Step 4: Setting the initialization listener
 
 ```java
-facial.addOnInitListener(new Facial.OnInitListener() {
+facialValidator.addOnInitListener(new FacialValidator.OnInitListener() {
     @Override
     public void onInit(String token) {
         // Saves the token in your local storage to reuse in case you need.
@@ -191,22 +184,12 @@ facial.addOnInitListener(new Facial.OnInitListener() {
 });
 ```
 
-
-
-## Starting 
-
-As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
-
-```java
-facial.start();
-```
-
-### Setting a result listener
+#### Step 5: Setting a result listener
 
 To receive the images and result of component execution it is necessary to setting up a result listener.
 
 ```java
-facial.addOnResultListener(new Facial.OnResultListener() {
+facialValidator.addOnResultListener(new Facial.OnResultListener() {
 
   @Override
   public void onSuccess(FaceResult faceResult, Bitmap faceImage, Bitmap areaImage) {
@@ -214,12 +197,12 @@ facial.addOnResultListener(new Facial.OnResultListener() {
   }
 
   @Override
-  public void onFail(Facial.ReasonFail reasonFail, String reason) {
+  public void onFail(String reason) {
 
   }
 
   @Override
-  public void onError(Facial.Error error, String message) {
+  public void onError(String error) {
 
   }
 });
@@ -229,26 +212,114 @@ facial.addOnResultListener(new Facial.OnResultListener() {
   - faceResult : An instance of FaceResult with information like confidence and a attack indicator.
   - faceImage : A bitmap with the face cropped.
   - areaImage: A bitmap of the area where the face was framed
-- The `onFail(ReasonFail reasonFail, String reason)` callback method is invoked when the liveness validation failed for the given configuration.
-- The `onError(Error error, String message)` callback method is invoked when the component throws an error.
+- The `onFail(String reason)` callback method is invoked when the liveness validation failed for the given configuration.
+- The `onError(String error)` callback method is invoked when the component throws an error.
 
-## Enabling debug mode
+#### Step 5: Start component
 
-Optional
-You can enable debug logs by calling set DebugLog
+As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
 
 ```java
-facial.setDebugLog(true);
+facialValidator.start();
 ```
 
-> ### 📘Note
->
-> To see full debug logs, make sure to call `setDebugLog` before invoking other SDK methods.
->
-> 
+### ID Validator
 
-> ### 🚧 Warning
->
-> To avoid leaking sensitive information, make sure debug logs are disabled before distributing the app.
+#### **Step 1: Import Nubarium library**
 
-## 
+In your Application class, import the Nubairum library classes:
+
+```java
+import com.nubarium.components.enums.CaptureMode;
+import com.nubarium.components.sdk.IdResult;
+import com.nubarium.components.sdk.IdValidator;
+```
+
+#### **Step 2: Initialize the SDK**
+
+**Local variables**
+
+It requires to declare the component as local variable.
+
+```java
+private IdValidator idValidator;   // Id validator component
+```
+
+In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
+
+```java
+// Class initialization with the Application Context
+idValidator = new IdValidator(this);
+
+// Step 1
+// Either of the 2 methods can be used, but only one.
+// Set the credentials provided by Nubarium.
+idValidator.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
+// Set the Api Key provided by Nubarium.
+idValidator.setApiKey(<NUB_KEY>);
+
+// Step 2 - OPTIONAL
+// In case the application has been initialized before and want to reuse a valid token
+// Set the valid token and specifies whether autogenerate a new one 
+// if the given token is not valid.
+idValidator.setToken(<NUB_TOKEN>, true);  
+
+// Step 3
+// Set the basic configuration (Options)
+idValidator.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
+idValidator.setShowHelp(false);   // Default value is false
+idValidator.setShowVideo(false);   // Default value is false
+idValidator.setShowPreview(false);   // Defaul values is false
+```
+
+1. The first step you set the Credentials or Api Key.
+
+2. The second step is optional and  is used in case the application has been initialized before and want to reuse a valid token.
+
+3. The third step is to configure the behavior of the component.
+
+   * *setCaptureMode* : Specifies the capture method, it could be useful if need to force a PASSIVE o ACTIVE MODE.
+
+   * *setShowHelp* : Specifies whether the help button is displayed. It requires the url to be specified in the component String values.
+
+   * *setShowVideo* : Specifies whether the video button is displayed. It requires the url to be specified in the component String values.
+
+   * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
+
+#### Step 3: **Setting up the Activity Result**
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Seeting the facial component with the request and result code.
+    idValidator.process(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
+}
+```
+
+It is recommended to use the initialization listener, to detect any fail or save the initialization token.
+
+#### Step 4: Setting the initialization listener
+
+```java
+idValidator.addOnInitListener(new IdValidator.OnInitListener() {
+    @Override
+    public void onInit(String token) {
+        // Saves the token in your local storage to reuse in case you need.
+    }
+
+    @Override
+    public void onFail(String reason) {
+        // Track the reason of the initialization fail.
+    }
+});
+```
+
+#### Step 5: Start component
+
+As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
+
+```java
+idValidator.start();
+```
+
