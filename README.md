@@ -1,8 +1,6 @@
-# Biometric SDK for Android
 
 Nubarium Biometrics Android SDK guides for developers.
-
-**Version** :  1.0.0
+[![GitHub Release](https://badgen.net/badge/release/v0.9.02/cyan)]()  
 
 ## SDK compatibility
 
@@ -13,6 +11,11 @@ Nubarium Biometrics Android SDK guides for developers.
 
 Install the Android SDK using Gradle.
 
+### Prerequisites
+
+- You must have your credentials or API Token. 
+- Request your credentials at support@
+
 ### Install using Gradle
 
 **Step 1: Declare repositories**
@@ -21,13 +24,18 @@ In the Project `build.gradle` file, declare the `jitpack` repository:
 ```groovy
 maven {
   url 'https://jitpack.io'
+  credentials { username authToken }
 }
+```
+
+And set de token value in `gradle.properties`  .
+
+```groovy
+authToken=AUTH_TOKEN_PROVIDED_BY_NUBARIUM
 ```
 
 **Step 2: Add dependencies**
 In the application `build.gradle` file, add the <u>latest Android SDK</u> package:
-
-Groovy
 
 ```groovy
 dependencies {
@@ -36,18 +44,9 @@ dependencies {
 }
 ```
 
-Apps targeting lighter installations could use an alternate version that allows to download some artifacts after the application is installed.
-
-```groovy
-`dependencies {`
-    `// Get the latest version from Nubarium Biometrics SDK repository`
-    `implementation 'com.github.nubariumdev:BiometricSDKComponents-Android-Lite:v1.0.0'` 
-`}`
-```
 
 
-
-## Setting required permissions
+### Setting required permissions
 
 Add the following permissions to `AndroidManifest.xml`:
 
@@ -70,17 +69,17 @@ AndroidManfiest.xml
 
 ```
 
-## Known issues
+### Known issues
 
-### Compatibility
+#### Compatibility
 
-### Maven repository
+#### Maven repository
 
 
 
 ## Integrate
 
-## Before you begin
+### Before you begin
 
 - You must install the Android SDK.
 - Ensure that in your app `build.gradle` file, `applicationId`'s value (in the `defaultConfig` block) matches the app's app ID in Nubarium.
@@ -92,7 +91,7 @@ AndroidManfiest.xml
 
 It's recommended to initialize the SDK in the global Application class/subclass. 
 
-### Face Capture
+### Facial Validator
 
 #### **Step 1: Import Nubarium library**
 
@@ -223,7 +222,7 @@ As in the application the component is declared as a local variable, it can be s
 facialValidator.start();
 ```
 
-### ID Capture
+### ID Validator
 
 #### **Step 1: Import Nubarium library**
 
@@ -322,4 +321,6 @@ As in the application the component is declared as a local variable, it can be s
 ```java
 idValidator.start();
 ```
+
+
 
