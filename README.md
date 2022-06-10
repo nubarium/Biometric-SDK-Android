@@ -1,6 +1,6 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v0.9.02/cyan)]()  
+[![GitHub Release](https://badgen.net/badge/release/v0.9.04/cyan)]()  
 
 ## SDK compatibility
 
@@ -14,7 +14,7 @@ Install the Android SDK using Gradle.
 ### Prerequisites
 
 - You must have your credentials or API Token. 
-- Request your credentials at support@
+- Request your credentials at support.
 
 ### Install using Gradle
 
@@ -40,7 +40,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubariumdev:BiometricSDKComponents-Android:v1.0.0' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v0.9.04' 
 }
 ```
 
@@ -99,7 +99,7 @@ In your Application class, import the Nubairum library classes:
 
 ```java
 import com.nubarium.components.sdk.FacialResult;
-import com.nubarium.components.sdk.FacialValidator;
+import com.nubarium.components.sdk.FacialCapture;
 ```
 
 #### **Step 2: Initialize the SDK**
@@ -109,34 +109,34 @@ import com.nubarium.components.sdk.FacialValidator;
 It requires to declare the component as local variable.
 
 ```java
-private FacialValidator facialValidator;    // Facial validator component
+private FacialCapture facialCapture;    // Facial validator component
 ```
 
 In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
 
 ```java
 // Class initialization with the Application Context
-facialValidator = new FacialValidator(this);
+facialCapture = new FacialCapture(this);
 
 // Step 1
 // Either of the 2 methods can be used, but only one.
 // Set the credentials provided by Nubarium.
-facialValidator.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
+facialCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 // Set the Api Key provided by Nubarium.
-facialValidator.setApiKey(<NUB_KEY>);
+facialCapture.setApiKey(<NUB_KEY>);
 
 // Step 2 - OPTIONAL
 // In case the application has been initialized before and want to reuse a valid token
 // Set the valid token and specifies whether autogenerate a new one 
 // if the given token is not valid.
-facialValidator.setToken(<NUB_TOKEN>, true);  
+facialCapture.setToken(<NUB_TOKEN>, true);  
 
 // Step 3
 // Set the basic configuration (Options)
-facialValidator.setLivenessRequired(true);  // Default value is true
-facialValidator.setShowHelp(false);   // Default value is false
-facialValidator.setShowVideo(false);   // Default value is false
-facialValidator.setShowPreview(false);   // Defaul values is false
+facialCapture.setLivenessRequired(true);  // Default value is true
+facialCapture.setShowHelp(false);   // Default value is false
+facialCapture.setShowVideo(false);   // Default value is false
+facialCapture.setShowPreview(false);   // Defaul values is false
 
 ```
 
@@ -170,7 +170,7 @@ It is recommended to use the initialization listener, to detect any fail or save
 #### Step 4: Setting the initialization listener
 
 ```java
-facialValidator.addOnInitListener(new FacialValidator.OnInitListener() {
+facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
     @Override
     public void onInit(String token) {
         // Saves the token in your local storage to reuse in case you need.
@@ -188,7 +188,7 @@ facialValidator.addOnInitListener(new FacialValidator.OnInitListener() {
 To receive the images and result of component execution it is necessary to setting up a result listener.
 
 ```java
-facialValidator.addOnResultListener(new Facial.OnResultListener() {
+facialCapture.addOnResultListener(new Facial.OnResultListener() {
 
   @Override
   public void onSuccess(FaceResult faceResult, Bitmap faceImage, Bitmap areaImage) {
@@ -219,8 +219,106 @@ facialValidator.addOnResultListener(new Facial.OnResultListener() {
 As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
 
 ```java
-facialValidator.start();
+facialCapture.start();
 ```
 
 ### ID Validator
+
+#### **Step 1: Import Nubarium library**
+
+In your Application class, import the Nubairum library classes:
+
+```java
+import com.nubarium.components.enums.CaptureMode;
+import com.nubarium.components.sdk.IdResult;
+import com.nubarium.components.sdk.IdCapture;
+```
+
+#### **Step 2: Initialize the SDK**
+
+**Local variables**
+
+It requires to declare the component as local variable.
+
+```java
+private IdCapture idCapture;   // Id validator component
+```
+
+In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
+
+```java
+// Class initialization with the Application Context
+idCapture = new IdCapture(this);
+
+// Step 1
+// Either of the 2 methods can be used, but only one.
+// Set the credentials provided by Nubarium.
+idCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
+// Set the Api Key provided by Nubarium.
+idCapture.setApiKey(<NUB_KEY>);
+
+// Step 2 - OPTIONAL
+// In case the application has been initialized before and want to reuse a valid token
+// Set the valid token and specifies whether autogenerate a new one 
+// if the given token is not valid.
+idCapture.setToken(<NUB_TOKEN>, true);  
+
+// Step 3
+// Set the basic configuration (Options)
+idCapture.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
+idCapture.setShowHelp(false);   // Default value is false
+idCapture.setShowVideo(false);   // Default value is false
+idCapture.setShowPreview(false);   // Defaul values is false
+```
+
+1. The first step you set the Credentials or Api Key.
+
+2. The second step is optional and  is used in case the application has been initialized before and want to reuse a valid token.
+
+3. The third step is to configure the behavior of the component.
+
+   * *setCaptureMode* : Specifies the capture method, it could be useful if need to force a PASSIVE o ACTIVE MODE.
+
+   * *setShowHelp* : Specifies whether the help button is displayed. It requires the url to be specified in the component String values.
+
+   * *setShowVideo* : Specifies whether the video button is displayed. It requires the url to be specified in the component String values.
+
+   * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
+
+#### Step 3: **Setting up the Activity Result**
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Seeting the facial component with the request and result code.
+    idCapture.process(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
+}
+```
+
+It is recommended to use the initialization listener, to detect any fail or save the initialization token.
+
+#### Step 4: Setting the initialization listener
+
+```java
+idCapture.addOnInitListener(new IdCapture.OnInitListener() {
+    @Override
+    public void onInit(String token) {
+        // Saves the token in your local storage to reuse in case you need.
+    }
+
+    @Override
+    public void onFail(String reason) {
+        // Track the reason of the initialization fail.
+    }
+});
+```
+
+#### Step 5: Start component
+
+As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
+
+```java
+idCapture.start();
+```
 
