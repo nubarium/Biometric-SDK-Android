@@ -2,6 +2,7 @@
 Nubarium Biometrics Android SDK guides for developers.
 [![GitHub Release](https://badgen.net/badge/release/v0.9.04/cyan)]()  
 
+
 ## SDK compatibility
 
 - Starting Android 6.0 with API v23 or ABOVE.
@@ -91,7 +92,7 @@ AndroidManfiest.xml
 
 It's recommended to initialize the SDK in the global Application class/subclass. 
 
-### Facial Validator
+### Facial Capture
 
 #### **Step 1: Import Nubarium library**
 
@@ -109,7 +110,7 @@ import com.nubarium.components.sdk.FacialCapture;
 It requires to declare the component as local variable.
 
 ```java
-private FacialCapture facialCapture;    // Facial validator component
+private FacialCapture facialCapture;    // Facial Capture component
 ```
 
 In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
@@ -222,7 +223,7 @@ As in the application the component is declared as a local variable, it can be s
 facialCapture.start();
 ```
 
-### ID Validator
+### ID Capture
 
 #### **Step 1: Import Nubarium library**
 
@@ -241,7 +242,7 @@ import com.nubarium.components.sdk.IdCapture;
 It requires to declare the component as local variable.
 
 ```java
-private IdCapture idCapture;   // Id validator component
+private IdCapture idCapture;   // Id Capture component
 ```
 
 In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
@@ -321,4 +322,3 @@ As in the application the component is declared as a local variable, it can be s
 ```java
 idCapture.start();
 ```
-
