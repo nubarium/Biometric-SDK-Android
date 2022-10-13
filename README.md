@@ -41,7 +41,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v0.9.04' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v0.1.06' 
 }
 ```
 
