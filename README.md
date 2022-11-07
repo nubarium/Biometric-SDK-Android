@@ -180,7 +180,7 @@ facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
 To receive the images and result of component execution it is necessary to setting up a result listener.
 
 ```java
-facialCapture.addOnResultListener(new Facial.OnResultListener() {
+facialCapture.addOnResultListener(new FacialCapture.OnResultListener() {
 
   @Override
   public void onSuccess(FaceResult faceResult, Bitmap faceImage, Bitmap areaImage) {
@@ -188,12 +188,12 @@ facialCapture.addOnResultListener(new Facial.OnResultListener() {
   }
 
   @Override
-  public void onFail(String reason) {
+  public void onFail(FacialCapture.ReasonFail reasonFail, String reason) {
 
   }
 
   @Override
-  public void onError(String error) {
+  public void onError(FacialCapture.Error error, String message) {
 
   }
 });
@@ -246,20 +246,10 @@ idCapture = new IdCapture(this);
 // Either of the 2 methods can be used, but only one.
 // Set the credentials provided by Nubarium.
 idCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
-// Set the Api Key provided by Nubarium.
-idCapture.setApiKey(<NUB_KEY>);
-
-// Step 2 - OPTIONAL
-// In case the application has been initialized before and want to reuse a valid token
-// Set the valid token and specifies whether autogenerate a new one 
-// if the given token is not valid.
-idCapture.setToken(<NUB_TOKEN>, true);  
 
 // Step 3
 // Set the basic configuration (Options)
 idCapture.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
-idCapture.setShowHelp(false);   // Default value is false
-idCapture.setShowVideo(false);   // Default value is false
 idCapture.setShowPreview(false);   // Defaul values is false
 ```
 
@@ -306,8 +296,31 @@ idCapture.addOnInitListener(new IdCapture.OnInitListener() {
     }
 });
 ```
+#### Step 5: Setting a result listener
 
-#### Step 5: Start component
+To receive the images and result of component execution it is necessary to setting up a result listener.
+
+```java
+idCapture.addOnResultListener(new Facial.OnResultListener() {
+
+  @Override
+  public void onSuccess(IdResult validateResultRet, Bitmap frontImage, Bitmap backImage, CaptureMode captureMode) {
+    
+  }
+
+  @Override
+  public void onFail(IdCapture.ReasonFail reasonFail, String reason) {
+
+  }
+
+  @Override
+  public void onError(IdCapture.Error error, String message) {
+
+  }
+});
+```
+
+#### Step 6: Start component
 
 As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
 
