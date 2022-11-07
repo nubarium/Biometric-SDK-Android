@@ -1,6 +1,6 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v0.9.04/cyan)]()  
+[![GitHub Release](https://badgen.net/badge/release/v1.200/cyan)]()  
 
 
 ## SDK compatibility
@@ -41,7 +41,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v0.1.06' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v1.200' 
 }
 ```
 
@@ -123,20 +123,10 @@ facialCapture = new FacialCapture(this);
 // Either of the 2 methods can be used, but only one.
 // Set the credentials provided by Nubarium.
 facialCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
-// Set the Api Key provided by Nubarium.
-facialCapture.setApiKey(<NUB_KEY>);
-
-// Step 2 - OPTIONAL
-// In case the application has been initialized before and want to reuse a valid token
-// Set the valid token and specifies whether autogenerate a new one 
-// if the given token is not valid.
-facialCapture.setToken(<NUB_TOKEN>, true);  
 
 // Step 3
 // Set the basic configuration (Options)
 facialCapture.setLivenessRequired(true);  // Default value is true
-facialCapture.setShowHelp(false);   // Default value is false
-facialCapture.setShowVideo(false);   // Default value is false
 facialCapture.setShowPreview(false);   // Defaul values is false
 
 ```
@@ -148,10 +138,6 @@ facialCapture.setShowPreview(false);   // Defaul values is false
 3. The third step is to configure the behavior of the component.
 
    * *setLivenesRequired* : Specifies whether the photo capture requires liveness detection.
-
-   * *setShowHelp* : Specifies whether the help button is displayed. It requires the url to be specified in the component String values.
-
-   * *setShowVideo* : Specifies whether the video button is displayed. It requires the url to be specified in the component String values.
 
    * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
 
@@ -177,6 +163,11 @@ facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
         // Saves the token in your local storage to reuse in case you need.
     }
 
+    @Override
+    public void onError(FacialCapture.Error error, String message) {
+        // Track the erro of the initialization.
+    }	    
+	   
     @Override
     public void onFail(String reason) {
         // Track the reason of the initialization fail.
@@ -280,10 +271,6 @@ idCapture.setShowPreview(false);   // Defaul values is false
 
    * *setCaptureMode* : Specifies the capture method, it could be useful if need to force a PASSIVE o ACTIVE MODE.
 
-   * *setShowHelp* : Specifies whether the help button is displayed. It requires the url to be specified in the component String values.
-
-   * *setShowVideo* : Specifies whether the video button is displayed. It requires the url to be specified in the component String values.
-
    * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
 
 #### Step 3: **Setting up the Activity Result**
@@ -308,6 +295,11 @@ idCapture.addOnInitListener(new IdCapture.OnInitListener() {
         // Saves the token in your local storage to reuse in case you need.
     }
 
+    @Override
+    public void onError(FacialCapture.Error error, String message) {
+        // Track the erro of the initialization.
+    }	    
+	    
     @Override
     public void onFail(String reason) {
         // Track the reason of the initialization fail.
