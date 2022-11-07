@@ -147,7 +147,7 @@ facialCapture.setShowPreview(false);   // Defaul values is false
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// Seeting the facial component with the request and result code.
-    facial.process(requestCode, resultCode, data);
+    facialCapture.process(requestCode, resultCode, data);
     super.onActivityResult(requestCode, resultCode, data);
 }
 ```
