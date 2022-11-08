@@ -250,7 +250,8 @@ idCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 // Step 3
 // Set the basic configuration (Options)
 idCapture.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
-idCapture.setShowPreview(false);   // Defaul values is false
+idCapture.setAllowCaptureOnFail(true); // Optional, let to take the ID capture even the validation fails.
+idCapture.setMaxValidations(3);  // Optional, set the maximum of validations to finalize the task.
 ```
 
 1. The first step you set the Credentials or Api Key.
@@ -260,8 +261,8 @@ idCapture.setShowPreview(false);   // Defaul values is false
 3. The third step is to configure the behavior of the component.
 
    * *setCaptureMode* : Specifies the capture method, it could be useful if need to force a PASSIVE o ACTIVE MODE.
-
-   * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
+   * *setAllowCaptureOnFail* : Specifies the flag, that lets to take the ID capture even the validation fails.
+   * *setMaxValidations* : Specifies maximum number of validations.
 
 #### Step 3: **Setting up the Activity Result**
 
