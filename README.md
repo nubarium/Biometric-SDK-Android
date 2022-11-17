@@ -41,7 +41,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v1.205' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v1.206' 
 }
 ```
 
@@ -56,7 +56,6 @@ AndroidManfiest.xml
 ```xml
 <uses-feature android:name="android.hardware.camera" />
 <uses-feature android:name="android.hardware.camera.autofocus" />
-<uses-feature android:name="android.hardware.camera.flash" />
 
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.CAMERA" />
