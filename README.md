@@ -1,6 +1,6 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v1.217/cyan)]()  
+[![GitHub Release](https://badgen.net/badge/release/v1.221/cyan)]()  
 
 
 ## SDK compatibility
@@ -41,7 +41,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v1.219' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v1.221' 
 }
 ```
 
@@ -56,9 +56,10 @@ AndroidManfiest.xml
 ```xml
 <uses-feature android:name="android.hardware.camera" />
 <uses-feature android:name="android.hardware.camera.autofocus" />
+<uses-permission android:name="android.permission.CAMERA" android:required="true" />
 
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.CAMERA" />
+
 <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -72,6 +73,8 @@ AndroidManfiest.xml
 ### Known issues
 
 #### Compatibility
+
+
 
 ## Integrate
 
@@ -284,7 +287,7 @@ idCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 // Set the basic configuration (Options)
 idCapture.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
 idCapture.setAllowCaptureOnFail(true); // Optional, let to take the ID capture even the validation fails.
-idCapture.setMaxValidations(3);  // Optional, set the maximum of validations to finalize the task.
+idCapture.setMaxValidations(5);  // Optional, set the maximum of validations to finalize the task.
 ```
 
 1. First, you have to set the Credentials or Api Key.
@@ -375,7 +378,7 @@ idCapture.addOnInitListener(new IdCapture.OnInitListener() {
 To receive the images and result of component execution it is necessary to setting up a result listener.
 
 ```java
-idCapture.addOnResultListener(new Facial.OnResultListener() {
+idCapture.addOnResultListener(new IdCapture.OnResultListener() {
 
   @Override
   public void onSuccess(IdResult validateResultRet, Bitmap frontImage, Bitmap backImage, CaptureMode captureMode) {
@@ -383,21 +386,4 @@ idCapture.addOnResultListener(new Facial.OnResultListener() {
   }
 
   @Override
-  public void onFail(IdCapture.ReasonFail reasonFail, String reason) {
-
-  }
-
-  @Override
-  public void onError(IdCapture.Error error, String message) {
-
-  }
-});
-```
-
-#### Step 6: Start component
-
-As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
-
-```java
-idCapture.start();
-```
+  public void onFail(IdResult validateResultRet,IdCapture.ReasonFail reasonFail, String reason, String[] retro) {
