@@ -248,6 +248,16 @@ facialCapture.addOnResultListener(new FacialCapture.OnResultListener() {
 
 As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
 
+***With Pre Initialization***
+
+If you want to prevalidate your credentials and prevent a delay in the start event, just initialize the component after declare the properties and event listeners and before start.
+
+```java
+facialCapture.initialize();
+```
+
+But you can just call the event start.
+
 ```java
 facialCapture.start();
 ```
@@ -387,3 +397,49 @@ idCapture.addOnResultListener(new IdCapture.OnResultListener() {
 
   @Override
   public void onFail(IdResult validateResultRet,IdCapture.ReasonFail reasonFail, String reason, String[] retro) {
+
+  }
+
+  @Override
+  public void onError(IdCapture.Error error, String message) {
+
+  }
+});
+```
+
+- The `onSuccess()` callback method is invoked if the execution of the component was successful, the method returns the following elements.
+  - idResult : An instance of IdResult with information like confidence and a attack indicator.
+  - frontImage : A bitmap with the ID front.
+  - backImage: A bitmap with the ID back.
+- The `onFail(IdCapture.ReasonFail fail, String reason)` callback method is invoked when the id capture failed for the given configuration.
+- The `onError(IdCapture.Error error, String error)` callback method is invoked when the component throws an error.
+
+##### IdResult 
+
+Class that represents the result of evaluation
+
+- getScore: Index value with score confidence (double), replace getConfidence used in older versions.
+- getConfidence: Index value with score confidence (double). // Deprecated, 
+- getResult : Result of evaluation (`pass` , `warning`, `fail`)
+- getRetro: List  of retroalimentation tags (String Array).
+  - suspicious surface
+  - low_reliability_text
+  - low_reliability_face
+  - high_accurate_ocr
+  - ocr_not_readable
+  - low_accurate_ocr
+  - medium_accurate_ocr
+- getOcr : Ocr object with attribute labels  (getLabels() )  that contains a list of OCR labels identified during the test (String Array).
+  - Front: *MEX, INE_TIT, IFE_TIT, CRED, REGISTRO, NOMBRE, EDAD, SEXO, NACIMIENTO, DOMICILIO, CVE_ELECTOR, CURP, ESTADO, SECCION, ANO_REG, LOCALIDAD, VIG_HASTA, VIGENCIA, EMISION, MUNICIPIO, NACIMIENTO_VAL, VIGENCIA_VAL, ANO_REG_VAL, CVE_ELECTOR_VAL, CURP_VAL*
+  - BACK: *IDMEX*
+
+#### Step 6: Start component
+
+As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
+
+```java
+idCapture.start();
+```
+
+
+
