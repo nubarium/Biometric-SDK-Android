@@ -1,6 +1,6 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v1.221/cyan)]()  
+[![GitHub Release](https://badgen.net/badge/release/v1.222/cyan)]()  
 
 
 ## SDK compatibility
@@ -41,7 +41,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v1.221' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v1.222' 
 }
 ```
 
