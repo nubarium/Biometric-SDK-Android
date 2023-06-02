@@ -5,7 +5,7 @@ Nubarium Biometrics Android SDK guides for developers.
 
 ## SDK compatibility
 
-- Starting Android 6.0 with API v23 or ABOVE.
+- Starting Android 7.0 with API v24 or ABOVE.
 - Mobile Android-based platforms.
 
 ## Installation
