@@ -1,6 +1,6 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v1.226/cyan)]()  
+[![GitHub Release](https://badgen.net/badge/release/v1.227/cyan)]()  
 
 
 ## SDK compatibility
