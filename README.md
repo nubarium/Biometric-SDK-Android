@@ -35,6 +35,7 @@ And set de token value in `gradle.properties`  .
 authToken=AUTH_TOKEN_PROVIDED_BY_NUBARIUM
 ```
 
+
 **Step 2: Add dependencies**
 In the application `build.gradle` file, add the <u>latest Android SDK</u> package:
 
@@ -45,9 +46,7 @@ dependencies {
 }
 ```
 
-
-
-### Setting required permissions
+### Setting required permissions and also a third library dependency
 
 Add the following permissions to `AndroidManifest.xml`:
 
@@ -67,6 +66,8 @@ AndroidManfiest.xml
 <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+<!-- Use face if you are using FaceCapture and ocr if you are using IdCapture -->
+<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="face, ocr" />
 
 ```
 
