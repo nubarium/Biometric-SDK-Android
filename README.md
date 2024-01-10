@@ -123,16 +123,17 @@ facialCapture = new FacialCapture(this);
 facialCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 
 // Set the basic configuration (Options)
-facialCapture.setLivenessRequired(true);  // Default value is true
 facialCapture.setShowPreview(false);   // Defaul values is false
-
+facialCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
 ```
 
 1. First, you have to set the Credentials or Api Key.
 3. Then configure the behavior of the component.
 
-   * *setLivenesRequired* : Specifies whether the photo capture requires liveness detection.
-* *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed. 
+   * *setAntispoofing* : Specifies whether the photo capture requires liveness detection, and the custom level between LOW, MEDIUM and HIGH
+* *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
+  
+
 
 **Setting up a Help Video (Optional)**
 
