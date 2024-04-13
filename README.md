@@ -67,7 +67,7 @@ AndroidManfiest.xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 <!-- Use face if you are using FaceCapture and ocr if you are using IdCapture -->
-<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="face, ocr" />
+<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="face" />
 
 ```
 
