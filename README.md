@@ -42,7 +42,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```groovy
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v1.2292' 
+    implementation 'com.github.nubarium:BiometricSDKComponents:v1.230' 
 }
 ```
 
@@ -53,6 +53,9 @@ Add the following permissions to `AndroidManifest.xml`:
 AndroidManfiest.xml
 
 ```xml
+<uses-feature android:name="android.hardware.sensor.accelerometer" />
+<uses-feature android:name="android.hardware.sensor.magnetic_field" />
+
 <uses-feature android:name="android.hardware.camera" />
 <uses-feature android:name="android.hardware.camera.autofocus" />
 <uses-permission android:name="android.permission.CAMERA" android:required="true" />
@@ -67,7 +70,7 @@ AndroidManfiest.xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 <!-- Use face if you are using FaceCapture and ocr if you are using IdCapture -->
-<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="face" />
+<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="ocr, face" />
 
 ```
 
