@@ -1,11 +1,10 @@
 # Biometric SDK for Android
 Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v1.319/cyan)]()  
-
+[![GitHub Release](https://badgen.net/badge/release/v1.891/cyan)]()  
 
 ## SDK compatibility
 
-- Starting Android 7.0 with API v24 or ABOVE.
+- Starting Android 8.0 with API v24 or ABOVE.
 - Mobile Android-based platforms.
 
 ## Installation
@@ -22,27 +21,25 @@ Install the Android SDK using Gradle.
 **Step 1: Declare repositories**
 In the Project `build.gradle` file, declare the `jitpack` repository:
 
-```groovy
+```kotlin
 maven {
-  url 'https://jitpack.io'
-  credentials { username authToken }
+  url = uri("https://jitpack.io")
+  credentials {
+    // Your Access token
+    username = "jp_akd345ksdtfdkfddfp"
+    password = ""
+  }
 }
-```
-
-And set de token value in `gradle.properties`  .
-
-```groovy
-authToken=AUTH_TOKEN_PROVIDED_BY_NUBARIUM
 ```
 
 
 **Step 2: Add dependencies**
 In the application `build.gradle` file, add the <u>latest Android SDK</u> package:
 
-```groovy
+```kotlin
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-    implementation 'com.github.nubarium:BiometricSDKComponents:v1.319' 
+  implementation("com.github.nubarium:BiometricSDKComponents:v1.891")
 }
 ```
 
@@ -53,24 +50,13 @@ Add the following permissions to `AndroidManifest.xml`:
 AndroidManfiest.xml
 
 ```xml
-<uses-feature android:name="android.hardware.sensor.accelerometer" />
-<uses-feature android:name="android.hardware.sensor.magnetic_field" />
-
 <uses-feature android:name="android.hardware.camera" />
 <uses-feature android:name="android.hardware.camera.autofocus" />
+
 <uses-permission android:name="android.permission.CAMERA" android:required="true" />
-
 <uses-permission android:name="android.permission.INTERNET" />
-
 <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-<!-- In case you use the VideoRecording component -->
-<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-<!-- Use face if you are using FaceCapture and ocr if you are using IdCapture -->
-<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="ocr, face" />
 
 ```
 
@@ -92,17 +78,19 @@ AndroidManfiest.xml
 
 ## Initializing the Android SDK
 
-It's recommended to initialize the SDK in the global Application class/subclass. 
+It's recommended to initialize the SDK in the global Application class, you need to add the following code in you onCreate  of application class.
 
-### Facial Capture
+```java
+com.nubarium.sdk.facecapture.FaceCaptureInitializer.init(getApplicationContext());
+```
 
 #### **Step 1: Import Nubarium library**
 
 In your Application class, import the Nubairum library classes:
 
 ```java
-import com.nubarium.components.sdk.FacialResult;
-import com.nubarium.components.sdk.FacialCapture;
+import com.nubarium.sdk.components.FaceResult;
+import com.nubarium.sdk.components.FaceCapture;
 ```
 
 #### **Step 2: Initialize the SDK**
@@ -112,46 +100,30 @@ import com.nubarium.components.sdk.FacialCapture;
 It requires to declare the component as local variable.
 
 ```java
-private FacialCapture facialCapture;    // Facial Capture component
+private FaceCapture faceCapture;    // Face Capture component
 ```
 
 In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
 
 ```java
 // Class initialization with the Application Context
-facialCapture = new FacialCapture(this);
+faceCapture = new FaceCapture(this);
 
 // Either of the 2 methods can be used, but only one.
 // Set the credentials provided by Nubarium.
-facialCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
+faceCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 
 // Set the basic configuration (Options)
-facialCapture.setShowPreview(false);   // Defaul values is false
-facialCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
+faceCapture.setShowPreview(false);   // Defaul values is false
+faceCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
 ```
 
 1. First, you have to set the Credentials or Api Key.
 3. Then configure the behavior of the component.
 
-   * *setAntispoofing* : Specifies whether the photo capture requires liveness detection, and the custom level between LOW, MEDIUM and HIGH
 * *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
   
 
-
-**Setting up a Help Video (Optional)**
-
-A help video can be enabled with the component, with this video a more detailed explanation of how to perform the tests can be provided. 
-
-```java
-// By default is false
-facialCapture.enableVideoHelp(false);
-```
-
-In case that its *enabled*, its neccesary to provide a video URL in your `strings.xml` resource.
-
-```xml
-<string name="nbm_facial_url_video">https://yourcompany.com/facial.mp4</string>
-```
 
 **Customize messages (Optional)**
 
@@ -189,8 +161,8 @@ The messages and labels can be customized in your  `strings.xml` resource.
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// Seeting the facial component with the request and result code.
-    facialCapture.process(requestCode, resultCode, data);
+        // Seeting the face component with the request and result code.
+    faceCapture.process(requestCode, resultCode, data);
     super.onActivityResult(requestCode, resultCode, data);
 }
 ```
@@ -200,7 +172,7 @@ It is recommended to use the initialization listener, to detect any fail or save
 #### Step 4: Setting the initialization listener
 
 ```java
-facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
+faceCapture.addOnInitListener(new FacialCapture.OnInitListener() {
     @Override
     public void onInit(String token) {
         // Saves the token in your local storage to reuse in case you need.
@@ -209,8 +181,8 @@ facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
     @Override
     public void onError(FacialCapture.Error error, String message) {
         // Track the erro of the initialization.
-    }	    
-	   
+    }       
+       
     @Override
     public void onFail(String reason) {
         // Track the reason of the initialization fail.
@@ -223,7 +195,7 @@ facialCapture.addOnInitListener(new FacialCapture.OnInitListener() {
 To receive the images and result of component execution it is necessary to setting up a result listener.
 
 ```java
-facialCapture.addOnResultListener(new FacialCapture.OnResultListener() {
+faceCapture.addOnResultListener(new FacialCapture.OnResultListener() {
 
   @Override
   public void onSuccess(FaceResult faceResult, Bitmap faceImage, Bitmap areaImage) {
@@ -258,13 +230,13 @@ As in the application the component is declared as a local variable, it can be s
 If you want to prevalidate your credentials and prevent a delay in the start event, just initialize the component after declare the properties and event listeners and before start.
 
 ```java
-facialCapture.initialize();
+faceCapture.initialize();
 ```
 
 But you can just call the event start.
 
 ```java
-facialCapture.start();
+faceCapture.start();
 ```
 
 ### ID Capture
@@ -445,6 +417,5 @@ As in the application the component is declared as a local variable, it can be s
 ```java
 idCapture.start();
 ```
-
 
 
