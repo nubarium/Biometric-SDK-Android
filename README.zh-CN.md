@@ -1,6 +1,5 @@
 # Nubarium Android 生物识别 SDK
 
-[English](README.md) | **简体中文**
 
 本文档介绍如何集成 Nubarium `FaceCapture`（人脸采集）和 `IdCapture`（证件采集）组件。
 
