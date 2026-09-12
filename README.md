@@ -39,7 +39,7 @@ In the application `build.gradle` file, add the <u>latest Android SDK</u> packag
 ```kotlin
 dependencies {
     // Get the latest version from Nubarium Biometrics SDK repository
-  implementation("com.github.nubarium:BiometricSDKComponents:v1.891")
+  implementation("com.github.nubarium:BiometricSDKComponents:v1.893")
 }
 ```
 
@@ -128,8 +128,11 @@ faceCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
 1. First, you have to set the Credentials or Api Key.
 3. Then configure the behavior of the component.
 
-* *setShowPreview* : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
-  
+**Set max number of validations (Optional)**
+faceCapture.setMaxValidations(3);
+
+**setShowPreview  (Optional)** : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
+faceCapture.setShowPreview(true);   // DEFAULT is FALSE 
 
 
 **Customize messages (Optional)**
