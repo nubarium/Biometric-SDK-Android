@@ -123,16 +123,19 @@ faceCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
 // Set the basic configuration (Options)
 faceCapture.setShowPreview(false);   // Defaul values is false
 faceCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
+
+//Optional
+faceCapture.setMaxValidations(3);
 ```
 
 1. First, you have to set the Credentials or Api Key.
 3. Then configure the behavior of the component.
 
-**Set max number of validations (Optional)**
-faceCapture.setMaxValidations(3);
+**setMaxValidations (Optional)**: Specifies the maximum number of validation attempts allowed during the face capture process before the validation is considered unsuccessful.
+faceCapture.setMaxValidations(3);  // DEFAULT VALUE : 3
 
 **setShowPreview  (Optional)** : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
-faceCapture.setShowPreview(true);   // DEFAULT is FALSE 
+faceCapture.setShowPreview(true);   // DEFAULT VALUE : FALSE 
 
 
 **Customize messages (Optional)**
