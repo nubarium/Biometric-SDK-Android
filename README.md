@@ -1,434 +1,409 @@
-# Biometric SDK for Android
-Nubarium Biometrics Android SDK guides for developers.
-[![GitHub Release](https://badgen.net/badge/release/v1.891/cyan)]()  
+# Nubarium Biometric SDK for Android
 
-## SDK compatibility
+Integration guide for the Nubarium `FaceCapture` and `IdCapture` components.
 
-- Starting Android 8.0 with API v24 or ABOVE.
-- Mobile Android-based platforms.
+## Requirements
+
+- Android API 24 (Android 7.0) or later.
+- A `ComponentActivity` or a subclass such as `AppCompatActivity`.
+- Camera and internet access.
+- Nubarium API credentials or a previously generated biometric token.
+- An `applicationId` registered with Nubarium.
+
+> `FaceCapture` and `IdCapture` register an Activity Result launcher internally. Create them from an activity, not from the `Application` object.
 
 ## Installation
 
-Install the Android SDK using Gradle.
+### 1. Add the repository
 
-### Prerequisites
-
-- You must have your credentials or API Token. 
-- Request your credentials at support.
-
-### Install using Gradle
-
-**Step 1: Declare repositories**
-In the Project `build.gradle` file, declare the `jitpack` repository:
+Add JitPack to `dependencyResolutionManagement` in `settings.gradle.kts`:
 
 ```kotlin
-maven {
-  url = uri("https://jitpack.io")
-  credentials {
-    // Your Access token
-    username = "jp_akd345ksdtfdkfddfp"
-    password = ""
-  }
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+
+            // Only required when access to the repository is private.
+            credentials {
+                username = providers.gradleProperty("JITPACK_TOKEN").orNull
+                    ?: System.getenv("JITPACK_TOKEN")
+                password = ""
+            }
+        }
+    }
 }
 ```
 
+Keep repository tokens outside source control. For example, define `JITPACK_TOKEN` in the user-level `~/.gradle/gradle.properties` file or as an environment variable.
 
-**Step 2: Add dependencies**
-In the application `build.gradle` file, add the <u>latest Android SDK</u> package:
+### 2. Add the dependency
+
+Add the SDK to the application module:
 
 ```kotlin
 dependencies {
-    // Get the latest version from Nubarium Biometrics SDK repository
-  implementation("com.github.nubarium:BiometricSDKComponents:v1.893")
+    implementation("com.github.nubarium:BiometricSDKComponents:v1.893")
 }
 ```
 
-### Setting required permissions and also a third library dependency
+This guide uses SDK version **1.893**. If Nubarium provides a different version,
+replace the version in the dependency accordingly.
 
-Add the following permissions to `AndroidManifest.xml`:
+### 3. Declare Android permissions
 
-AndroidManfiest.xml
+Add the following entries to `AndroidManifest.xml`:
 
 ```xml
-<uses-feature android:name="android.hardware.camera" />
-<uses-feature android:name="android.hardware.camera.autofocus" />
+<uses-feature android:name="android.hardware.camera" android:required="true" />
+<uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
-<uses-permission android:name="android.permission.CAMERA" android:required="true" />
+<uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 ```
 
-### Known issues
+The host application must declare the camera permission in its manifest. The SDK
+requests the camera runtime permission when needed; if the application has
+already obtained it, the capture flow continues immediately.
 
-#### Compatibility
+## Optional startup initialization
 
-
-
-## Integrate
-
-### Before you begin
-
-- You must install the Android SDK.
-- Ensure that in your app `build.gradle` file, `applicationId`'s value (in the `defaultConfig` block) matches the app's app ID in Nubarium.
-- Get the Nubarium Key or API Credentials. It is required to successfully initialize the SDK.
-- The codes in this document are example implementations. Make sure to change the `<NUB_KEY>`, `<NUB_USERNAME>`,  `<NUB_PASSWORD>` and other placeholders as needed.
-- All the steps in this document are mandatory unless stated otherwise.
-
-## Initializing the Android SDK
-
-It's recommended to initialize the SDK in the global Application class, you need to add the following code in you onCreate  of application class.
-
-**FaceCapture Initializer**
-```java
-com.nubarium.sdk.facecapture.FaceCaptureInitializer.init(getApplicationContext());
-```
-
-**IdCapture Initializer**
-```java
-com.nubarium.sdk.idcapture.IdCaptureInitializer.init(getApplicationContext());
-```
-
-
-#### **Step 1: Import Nubarium library**
-
-In your Application class, import the Nubairum library classes:
+The initializers check and request the Google Play Services modules used by face detection and OCR. Call them once from `Application.onCreate()`:
 
 ```java
-import com.nubarium.sdk.components.FaceResult;
-import com.nubarium.sdk.components.FaceCapture;
-```
+import android.app.Application;
 
-#### **Step 2: Initialize the SDK**
+import com.nubarium.sdk.facecapture.FaceCaptureInitializer;
+import com.nubarium.sdk.idcapture.IdCaptureInitializer;
 
-**Local variables**
+public final class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-It requires to declare the component as local variable.
-
-```java
-private FaceCapture faceCapture;    // Face Capture component
-```
-
-In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
-
-```java
-// Class initialization with the Application Context
-faceCapture = new FaceCapture(this);
-
-// Either of the 2 methods can be used, but only one.
-// Set the credentials provided by Nubarium.
-faceCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
-
-// Set the basic configuration (Options)
-faceCapture.setShowPreview(false);   // Defaul values is false
-faceCapture.setAntispoofing(true, FacialCapture.ANTISPOOFING_LEVEL_MEDIUM);
-
-//Optional
-faceCapture.setMaxValidations(3);
-```
-
-1. First, you have to set the Credentials or Api Key.
-3. Then configure the behavior of the component.
-
-**setMaxValidations (Optional)**: Specifies the maximum number of validation attempts allowed during the face capture process before the validation is considered unsuccessful.
-faceCapture.setMaxValidations(3);  // DEFAULT VALUE : 3
-
-**setShowPreview  (Optional)** : Specifies whether the dialog requiring a confirmation with a preview photo is displayed.
-faceCapture.setShowPreview(true);   // DEFAULT VALUE : FALSE 
-
-
-**Customize messages (Optional)**
-
-The messages and labels can be customized in your  `strings.xml` resource.
-
-```xml
-<string name="nbm_facial_title">Prueba de vida y Captura facial.</string>
-<string name="nbm_facial_instructions">Para realizar la prueba de vida y la captura facial es necesario que enfoque la camara directamente en su rostro y evite moverse de manera brusca para un mejor enfoque.</string>
-<string name="nbm_facial_instructions_list">Permanezca en un lugar iluminado.|Sostenga la camara en un ángulo de 90 grados.</string>
-
-<string name="nbm_facial_preview_title">Confirmar</string>
-<string name="nbm_facial_preview_instructions">Al realizar la validación tomamos una fotografía que usaremos en nuestro proceso de validación, si deseas, puedes reintentarlo oprimiendo en Reintentar, de lo contrarío sólo oprime el boton para Continuar.</string>
-
-<string name="nbm_facial_btn_back">Regresar</string>
-<string name="nbm_facial_btn_start">Iniciar</string>
-<string name="nbm_facial_btn_accept">Aceptar.</string>
-<string name="nbm_facial_btn_cancel">Cancelar</string>
-<string name="nbm_facial_btn_validate">Validar</string>
-<string name="nbm_facial_btn_finish">Finalizar</string>
-
-<string name="nbm_facial_msg_dont_move">NO TE MUEVAS</string>
-<string name="nbm_facial_msg_blurred">ENFOCA LA CAMARA Y NO SE MUEVA</string>
-<string name="nbm_facial_msg_face_outside">COLOQUE SU ROSTRO DENTRO DEL OVALO</string>
-<string name="nbm_facial_msg_no_face">COLOQUE SU ROSTRO FRENTE A LA CAMARA</string>
-<string name="nbm_facial_msg_many_faces">ASEGURE QUE SU ROSTRO SEA EL UNICO</string>
-<string name="nbm_facial_msg_far_away">ACERCATE UN POCO</string>
-<string name="nbm_facial_msg_too_close">ALEJATE UN POCO</string>
-<string name="nbm_facial_msg_fail">COLOQUESE EN UN LUGAR MEJOR ILUMINADO</string>
-<string name="nbm_facial_msg_static_eye">ENFOQUE SU ROSTRO FRENTE A LA CAMARA</string>
-<string name="nbm_facial_msg_captured">LISTO</string>
-```
-
-#### Step 3: **Setting up the Activity Result**
-
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Seeting the face component with the request and result code.
-    faceCapture.process(requestCode, resultCode, data);
-    super.onActivityResult(requestCode, resultCode, data);
+        FaceCaptureInitializer.init(getApplicationContext());
+        IdCaptureInitializer.init(getApplicationContext());
+    }
 }
 ```
 
-It is recommended to use the initialization listener, to detect any fail or save the initialization token.
+This startup initialization is different from `faceCapture.initialize()` and `idCapture.initialize()`, which validate credentials or a biometric token.
 
-#### Step 4: Setting the initialization listener
+## Face capture and liveness
 
-```java
-faceCapture.addOnInitListener(new FacialCapture.OnInitListener() {
-    @Override
-    public void onInit(String token) {
-        // Saves the token in your local storage to reuse in case you need.
-    }
-
-    @Override
-    public void onError(FacialCapture.Error error, String message) {
-        // Track the erro of the initialization.
-    }       
-       
-    @Override
-    public void onFail(String reason) {
-        // Track the reason of the initialization fail.
-    }
-});
-```
-
-#### Step 5: Setting a result listener
-
-To receive the images and result of component execution it is necessary to setting up a result listener.
+### Imports
 
 ```java
-faceCapture.addOnResultListener(new FacialCapture.OnResultListener() {
+import android.graphics.Bitmap;
+import android.os.Bundle;
 
-  @Override
-  public void onSuccess(FaceResult faceResult, Bitmap faceImage, Bitmap areaImage) {
-    
-  }
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-  @Override
-  public void onFail(FacialCapture.ReasonFail reasonFail, String reason) {
-
-  }
-
-  @Override
-  public void onError(FacialCapture.Error error, String message) {
-
-  }
-});
+import com.nubarium.sdk.components.FaceCapture;
+import com.nubarium.sdk.components.FaceResult;
 ```
 
-- The `onSuccess()` callback method is invoked if the execution of the component was successful, the method returns the following elements.
-  - faceResult : An instance of FaceResult with information like confidence and a attack indicator.
-  - faceImage : A bitmap with the face cropped.
-  - areaImage: A bitmap of the area where the face was framed
-- The `onFail(String reason)` callback method is invoked when the liveness validation failed for the given configuration.
-- The `onError(String error)` callback method is invoked when the component throws an error.
+### Create and configure `FaceCapture`
 
-#### Step 5: Start component
+Create the component in `Activity.onCreate()` so its internal Activity Result launcher is registered at the correct lifecycle stage:
 
-As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
+```java
+public final class FaceVerificationActivity extends AppCompatActivity {
+    private FaceCapture faceCapture;
 
-***With Pre Initialization***
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-If you want to prevalidate your credentials and prevent a delay in the start event, just initialize the component after declare the properties and event listeners and before start.
+        faceCapture = new FaceCapture(this);
+
+        // Use credentials supplied securely by your integration.
+        faceCapture.setCredentials(NUB_USERNAME, NUB_PASSWORD);
+
+        faceCapture.setAntispoofing(
+                true,
+                FaceCapture.ANTISPOOFING_LEVEL_MEDIUM
+        );
+
+        // Optional adjustments. The component defaults are normally sufficient.
+        // faceCapture.setShowPreview(false);
+        // faceCapture.setMaxValidations(3);
+        // faceCapture.setTimeoutAttempt(40_000); // Milliseconds
+
+        configureFaceCaptureListeners();
+    }
+}
+```
+
+Do not hardcode, persist in plain text, or print usernames, passwords, authorization headers, biometric tokens, request bodies, or Base64 images in production logs.
+
+### Initialization listener
+
+```java
+private void configureFaceCaptureListeners() {
+    faceCapture.addOnInitListener(new FaceCapture.OnInitListener() {
+        @Override
+        public void onInit(String token) {
+            // Initialization succeeded. Store the token only in secure storage
+            // if your integration needs to reuse it.
+        }
+
+        @Override
+        public void onFail(String reason) {
+            // Current values may include:
+            // NOT_VALID, INVALID_CREDENTIALS, UNKNOWN
+        }
+
+        @Override
+        public void onError(FaceCapture.Error error, String message) {
+            switch (error) {
+                case TOKEN_REQUEST_ERROR:
+                    // Invalid service response or response structure.
+                    break;
+                case BAD_CREDENTIALS:
+                    // HTTP 401 while requesting a token.
+                    break;
+                case SERVICE_ERROR:
+                    // HTTP 500.
+                    break;
+                case SERVICE_NOT_AVAILABLE:
+                    // HTTP 404.
+                    break;
+                case UNKNOWN:
+                    // Another HTTP status, transport failure, or parsing failure.
+                    break;
+                default:
+                    // Handle any additional initialization error.
+                    break;
+            }
+        }
+    });
+
+    faceCapture.addOnResultListener(new FaceCapture.OnResultListener() {
+        @Override
+        public void onSuccess(
+                FaceResult faceResult,
+                Bitmap faceImage,
+                Bitmap areaImage
+        ) {
+            // faceImage: cropped face.
+            // areaImage: complete capture area/frame.
+            // faceResult: service result, score and operation identifiers.
+        }
+
+        @Override
+        public void onFail(
+                FaceResult faceResult,
+                FaceCapture.ReasonFail reasonFail,
+                String reason
+        ) {
+            // The capture did not satisfy the configured validation criteria.
+        }
+
+        @Override
+        public void onError(FaceCapture.Error error, String message) {
+            // Handle a capture error.
+        }
+
+        @Override
+        public void onCancel() {
+            // The user canceled the component.
+        }
+    });
+}
+```
+
+### Start `FaceCapture`
+
+You may pre-initialize the component to validate credentials and reduce work performed when capture starts:
 
 ```java
 faceCapture.initialize();
 ```
 
-But you can just call the event start.
+Start the user-facing flow from an event such as a button click:
 
 ```java
 faceCapture.start();
 ```
 
-### ID Capture
+`start()` also initializes the component when no recent valid initialization is available.
 
-#### **Step 1: Import Nubarium library**
+No additional `onActivityResult()` forwarding is required. `FaceCapture`
+handles activity results through the Activity Result API.
 
-In your Application class, import the Nubairum library classes:
+### Customize face-capture messages
 
-```java
-import com.nubarium.components.enums.CaptureMode;
-import com.nubarium.components.sdk.IdResult;
-import com.nubarium.components.sdk.IdCapture;
-```
-
-#### **Step 2: Initialize the SDK**
-
-**Local variables**
-
-It requires to declare the component as local variable.
-
-```java
-private IdCapture idCapture;   // Id Capture component
-```
-
-In the global Application `onCreate`, create an instance of the component and set the credentials or API Key (either of the 2 methods can be used) and set the configuration.
-
-```java
-// Class initialization with the Application Context
-idCapture = new IdCapture(this);
-
-// Either of the 2 methods can be used, but only one.
-// Set the credentials provided by Nubarium.
-idCapture.setCredentials(<NUB_USERNAME>,<NUB_PASSWORD>);
-
-// Set the basic configuration (Options)
-idCapture.setCaptureMode(CaptureMode.AUTO);  // Default value is CaptureMode.AUTO
-idCapture.setAllowCaptureOnFail(true); // Optional, let to take the ID capture even the validation fails.
-idCapture.setMaxValidations(5);  // Optional, set the maximum of validations to finalize the task.
-```
-
-1. First, you have to set the Credentials or Api Key.
-3. Then configure the behavior of the component.
-
-   * *setCaptureMode* : Specifies the capture method, it could be useful if need to force a PASSIVE o ACTIVE MODE.
-   * *setAllowCaptureOnFail* : Specifies the flag, that lets to take the ID capture even the validation fails.
-   * *setMaxValidations* : Specifies maximum number of validations.
-
-**Setting up a Help Video (Optional)**
-
-A help video can be enabled with the component, with this video a more detailed explanation of how to perform the tests can be provided. 
-
-```java
-// By default is false
-idCapture.enableVideoHelp(false);
-```
-
-In case that its *enabled*, its neccesary to provide a video URL in your `strings.xml` resource.
+Override the SDK resource names in the application's `strings.xml`:
 
 ```xml
-<string name="nbm_id_url_video">https://yourcompany.com/id.mp4</string>
+<resources>
+    <string name="nbm_facial_title">Liveness check and face capture</string>
+    <string name="nbm_facial_instructions">Position your face in front of the camera and avoid sudden movements.</string>
+    <string name="nbm_facial_instructions_list">Stay in a well-lit area.|Hold the camera at a 90-degree angle.</string>
+
+    <string name="nbm_facial_preview_title">Confirm</string>
+    <string name="nbm_facial_preview_instructions">Review the photo. You can retry or continue.</string>
+
+    <string name="nbm_facial_btn_back">Back</string>
+    <string name="nbm_facial_btn_start">Start</string>
+    <string name="nbm_facial_btn_accept">Accept</string>
+    <string name="nbm_facial_btn_cancel">Cancel</string>
+    <string name="nbm_facial_btn_validate">Validate</string>
+    <string name="nbm_facial_btn_finish">Finish</string>
+
+    <string name="nbm_facial_msg_dont_move">DO NOT MOVE</string>
+    <string name="nbm_facial_msg_blurred">FOCUS THE CAMERA AND HOLD STILL</string>
+    <string name="nbm_facial_msg_face_outside">PLACE YOUR FACE INSIDE THE OVAL</string>
+    <string name="nbm_facial_msg_no_face">POSITION YOUR FACE IN FRONT OF THE CAMERA</string>
+    <string name="nbm_facial_msg_many_faces">MAKE SURE YOUR FACE IS THE ONLY ONE VISIBLE</string>
+    <string name="nbm_facial_msg_far_away">MOVE A LITTLE CLOSER</string>
+    <string name="nbm_facial_msg_too_close">MOVE A LITTLE FARTHER AWAY</string>
+    <string name="nbm_facial_msg_fail">MOVE TO A BETTER-LIT AREA</string>
+    <string name="nbm_facial_msg_static_eye">LOOK DIRECTLY AT THE CAMERA</string>
+    <string name="nbm_facial_msg_captured">DONE</string>
+</resources>
 ```
 
-**Customize messages (Optional)**
+### Customize colors
 
-The messages and labels can be customized in your  `strings.xml` resource.
+The component colors can be customized to match the visual identity of the
+host application. Override the following resources in the application's
+`res/values/colors.xml` file and replace the hexadecimal values with the colors
+chosen by your team:
 
 ```xml
-<string name="nbm_id_title">Captura de Identificación</string>
-<string name="nbm_id_instructions">Favor de capturar ambos lados de su credencial de elector.</string>
-
-<string name="nbm_id_btn_proceed_capture">CAPTURAR IDENTIFICACION</string>
-
-<string name="nbm_id_btn_back">Regresar</string>
-<string name="nbm_id_btn_start">Iniciar</string>
-<string name="nbm_id_btn_accept">Aceptar</string>
-<string name="nbm_id_btn_cancel">Cancelar</string>
-<string name="nbm_id_btn_validate">Validar</string>
-<string name="nbm_id_btn_finish">Finalizar</string>
-
-<string name="nbm_id_msg_validating">ESPERA UN MOMENTO, VALIDANDO ID</string>
-<string name="nbm_id_msg_center_inside">CENTRA EL ID DENTRO DEL RECUADRO</string>
-<string name="nbm_id_msg_too_far">ACERCA EL ID</string>
-<string name="nbm_id_msg_taking_picture">ESPERA UN MOMENTO, VALIDANDO ID</string>
-<string name="nbm_id_msg_try_better">INTENTE EN UN LUGAR MEJOR ILUMINADO</string>
-<string name="nbm_id_msg_no_id">COLOCA EL ID DENTRO DEL RECUADRO</string>
-<string name="nbm_id_msg_blurred">ENFOQUE LA CAMARA</string>
-<string name="nbm_id_msg_not_valid">La identificación capturada no es válida, favor de capturarla de nuevo</string>
-<string name="nbm_id_msg_captured">Capturado</string>
+<resources>
+    <color name="colorPrimary">#162B62</color>
+    <color name="colorPrimaryDark">#0F2550</color>
+    <color name="colorAccent">#162B62</color>
+    <color name="colorSecondary">#89D099</color>
+</resources>
 ```
 
-#### Step 3: **Setting up the Activity Result**
+These values are examples. Integrators may change them to use their own brand
+palette.
+
+## ID capture
+
+### Imports
 
 ```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// Seeting the facial component with the request and result code.
-    idCapture.process(requestCode, resultCode, data);
-    super.onActivityResult(requestCode, resultCode, data);
+import android.graphics.Bitmap;
+
+import com.nubarium.sdk.common.enums.CaptureMode;
+import com.nubarium.sdk.components.IdCapture;
+import com.nubarium.sdk.components.IdResult;
+```
+
+### Create and configure `IdCapture`
+
+Like `FaceCapture`, create `IdCapture` from a `ComponentActivity` or subclass:
+
+```java
+private IdCapture idCapture;
+
+private void configureIdCapture() {
+    idCapture = new IdCapture(this);
+    idCapture.setCredentials(NUB_USERNAME, NUB_PASSWORD);
+    idCapture.setCaptureMode(CaptureMode.AUTO);
+
+    // Optional adjustments:
+    // idCapture.setAllowCaptureOnFail(true);
+    // idCapture.setMaxValidations(5);
 }
 ```
 
-It is recommended to use the initialization listener, to detect any fail or save the initialization token.
-
-#### Step 4: Setting the initialization listener
+### ID initialization listener
 
 ```java
 idCapture.addOnInitListener(new IdCapture.OnInitListener() {
     @Override
     public void onInit(String token) {
-        // Saves the token in your local storage to reuse in case you need.
+        // Initialization succeeded.
     }
 
     @Override
-    public void onError(FacialCapture.Error error, String message) {
-        // Track the erro of the initialization.
-    }	    
-	    
-    @Override
     public void onFail(String reason) {
-        // Track the reason of the initialization fail.
+        // Token validation failed.
+    }
+
+    @Override
+    public void onError(IdCapture.Error error, String message) {
+        // Credential, service, response, or transport error.
     }
 });
 ```
-#### Step 5: Setting a result listener
 
-To receive the images and result of component execution it is necessary to setting up a result listener.
+### ID result listener
 
 ```java
 idCapture.addOnResultListener(new IdCapture.OnResultListener() {
+    @Override
+    public void onSuccess(
+            IdResult idResult,
+            Bitmap frontImage,
+            Bitmap backImage,
+            CaptureMode resultMode
+    ) {
+        // Capture completed successfully.
+    }
 
-  @Override
-  public void onSuccess(IdResult validateResultRet, Bitmap frontImage, Bitmap backImage, CaptureMode captureMode) {
-    
-  }
+    @Override
+    public void onFail(
+            IdResult idResult,
+            IdCapture.ReasonFail reasonFail,
+            String reason
+    ) {
+        // The capture did not satisfy the configured validation criteria.
+    }
 
-  @Override
-  public void onFail(IdResult validateResultRet,IdCapture.ReasonFail reasonFail, String reason, String[] retro) {
+    @Override
+    public void onError(IdCapture.Error error, String message) {
+        // Handle component errors.
+    }
 
-  }
-
-  @Override
-  public void onError(IdCapture.Error error, String message) {
-
-  }
+    @Override
+    public void onCancel() {
+        // The user canceled the component.
+    }
 });
 ```
 
-- The `onSuccess()` callback method is invoked if the execution of the component was successful, the method returns the following elements.
-  - idResult : An instance of IdResult with information like confidence and a attack indicator.
-  - frontImage : A bitmap with the ID front.
-  - backImage: A bitmap with the ID back.
-- The `onFail(IdCapture.ReasonFail fail, String reason)` callback method is invoked when the id capture failed for the given configuration.
-- The `onError(IdCapture.Error error, String error)` callback method is invoked when the component throws an error.
-
-##### IdResult 
-
-Class that represents the result of evaluation
-
-- getScore: Index value with score confidence (double), replace getConfidence used in older versions.
-- getConfidence: Index value with score confidence (double). // Deprecated, 
-- getResult : Result of evaluation (`pass` , `warning`, `fail`)
-- getRetro: List  of retroalimentation tags (String Array).
-  - suspicious surface
-  - low_reliability_text
-  - low_reliability_face
-  - high_accurate_ocr
-  - ocr_not_readable
-  - low_accurate_ocr
-  - medium_accurate_ocr
-- getOcr : Ocr object with attribute labels  (getLabels() )  that contains a list of OCR labels identified during the test (String Array).
-  - Front: *MEX, INE_TIT, IFE_TIT, CRED, REGISTRO, NOMBRE, EDAD, SEXO, NACIMIENTO, DOMICILIO, CVE_ELECTOR, CURP, ESTADO, SECCION, ANO_REG, LOCALIDAD, VIG_HASTA, VIGENCIA, EMISION, MUNICIPIO, NACIMIENTO_VAL, VIGENCIA_VAL, ANO_REG_VAL, CVE_ELECTOR_VAL, CURP_VAL*
-  - BACK: *IDMEX*
-
-#### Step 6: Start component
-
-As in the application the component is declared as a local variable, it can be started in programmatically or in some event such as onClick button.
+### Start `IdCapture`
 
 ```java
+idCapture.initialize(); // Optional pre-initialization
 idCapture.start();
 ```
 
+No additional `onActivityResult()` forwarding is required. `IdCapture` handles
+activity results through the Activity Result API.
 
+### `IdResult`
+
+The result includes:
+
+- `getScore()`: current evaluation score.
+- `getResult()`: evaluation result, such as `pass`, `warning`, or `fail`.
+- `getRetro()`: feedback tags returned by the service.
+- `getOcr()`: OCR results and detected labels.
+- `getDocumentIdInfo()`: detected document information.
+
+Treat service-provided values as nullable unless the SDK contract for the deployed version guarantees otherwise.
+
+## Security and production logging
+
+Never log or expose:
+
+- Nubarium username or password.
+- Basic Authorization headers.
+- Biometric tokens or signatures.
+- Complete request or response bodies containing personal information.
+- Face, frame, front-ID, or back-ID images in raw bytes or Base64.
+
+Use build-time configuration or secure storage for credentials. If diagnostic logging is required, log only a correlation identifier, HTTP status, elapsed time, and a sanitized error category. Disable verbose logging in release builds.
